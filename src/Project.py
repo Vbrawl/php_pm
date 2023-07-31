@@ -14,7 +14,6 @@ class Project:
         self.url = project_json["project_url"]
         self.requirements = project_json["project_requirements"]
         self.library_directory = project_json["project_library_directory"]
-        if not self.library_directory: self.library_directory = "pm_library"
     
     def import_project(self, project: 'Project'):
         src = project.path
