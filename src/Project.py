@@ -1,22 +1,33 @@
 import os
 import utils
+from typing import Optional
 
 
+class ProjectJson:
+    def __init__(self, project_json_path:Optional[str]):
+        if project_json_path and os.path.isfile(project_json_path):
+            project_json = utils.read_json(project_json_path)
+            if isinstance(project_json, list):
+                raise TypeError("Project json file must be a key-value array.")
+        else:
+            project_json = {}
 
+        get_value = lambda key, default_ = "": project_json[key] if key in project_json.keys() else default_
+
+        self.name = get_value("project_name", "Project")
+        self.version = get_value("project_version", "1.0.0")
+        self.url = get_value("project_url", "")
+        self.requirements = get_value("project_requirements", {})
+        self.library_directory = get_value("project_library_directory", "pm_library")
 
 class Project:
     def __init__(self, path:str, project_json_filename:str = "project.json"):
-        project_json = utils.read_json(os.path.join(path, project_json_filename))
-
         self.path = path
-        self.name = project_json["project_name"]
-        self.version = project_json["project_version"]
-        self.url = project_json["project_url"]
-        self.requirements = project_json["project_requirements"]
-        self.library_directory = project_json["project_library_directory"]
+        self.project_json_filename = project_json_filename
+        self.config = ProjectJson(os.path.join(path, project_json_filename))
     
     def import_project(self, project: 'Project'):
         src = project.path
-        dest = os.path.join(self.path, self.library_directory, project.name)
+        dest = os.path.join(self.path, self.config.library_directory, project.config.name)
 
         utils.copy_tree(src, dest)
