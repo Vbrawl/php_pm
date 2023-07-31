@@ -9,8 +9,10 @@ def read_json(filepath:str) -> list | dict:
 
 def copy_file(source:str, destination:str, chunk:int = 1024*10):
     with open(source, 'rb') as src, open(destination, 'wb') as dst:
-        while src:
-            dst.write(src.read(chunk))
+        c = src.read(chunk)
+        while c:
+            dst.write(c)
+            c = src.read(chunk)
 
 def copy_tree(source:str, destination:str):
     os.makedirs(destination)
