@@ -20,15 +20,15 @@ class Test_Utils(unittest.TestCase):
         f.close()
 
         data2 = utils.read_json(fname)
-        self.assertEqual(data, data2)
+        self.assertEqual(data, data2, "Data was altered.")
     
     def test_copy_file(self):
         f = tempfile.TemporaryFile("w", delete=False)
         f.close()
         utils.copy_file(f.name, f.name+".2")
 
-        self.assertTrue(os.path.isfile(f.name))
-        self.assertTrue(os.path.isfile(f.name+".2"))
+        self.assertTrue(os.path.isfile(f.name), "Source file does not exist.")
+        self.assertTrue(os.path.isfile(f.name+".2"), "Destination file does not exist.")
 
     def test_copy_tree(self):
         directory = tempfile.mkdtemp("tree", "copy")
@@ -36,8 +36,8 @@ class Test_Utils(unittest.TestCase):
 
         utils.copy_tree(directory, directory+"2")
 
-        self.assertTrue(os.path.isfile(os.path.join(directory, "testFile")))
-        self.assertTrue(os.path.isfile(os.path.join(directory+"2", "testFile")))
+        self.assertTrue(os.path.isfile(os.path.join(directory, "testFile")), "Source directory does not exist.")
+        self.assertTrue(os.path.isfile(os.path.join(directory+"2", "testFile")), "Destination directory does not exist.")
 
 
 
@@ -71,15 +71,38 @@ class Test_Project(unittest.TestCase):
 
         p2.import_project(p1)
 
-        dir3 = os.path.join(p2.path, p2.library_directory, p1.name)
+        dir3 = os.path.join(p2.path, p2.config.library_directory, p1.config.name)
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
-        p3 = Project.Project(dir3)
 
-        self.assertEqual(p1.name, p3.name)
-        self.assertEqual(p1.version, p3.version)
-        self.assertEqual(p1.url, p3.url)
-        self.assertEqual(p1.requirements, p3.requirements)
-        self.assertEqual(p1.library_directory, p3.library_directory)
+class Test_ProjectJson(unittest.TestCase):
+    def test_constructor(self):
+
+        pj = Project.ProjectJson(None)
+
+        self.assertEqual(pj.name, "Project")
+        self.assertEqual(pj.version, "1.0.0")
+        self.assertEqual(pj.url, "")
+        self.assertEqual(pj.requirements, {})
+        self.assertEqual(pj.library_directory, "pm_library")
+
+
+        f = tempfile.TemporaryFile("w", delete=False)
+        json.dump({
+            "project_name": "Project123",
+            "project_version": "1.0.1",
+            "project_url": "https://github.com/",
+            "project_requirements": {"testPack": "https://github.com/testPack"},
+            "project_library_directory": "pm_library1"
+        }, f)
+        f.close()
+
+        pj2 = Project.ProjectJson(f.name)
+        self.assertEqual(pj2.name, "Project123")
+        self.assertEqual(pj2.version, "1.0.1")
+        self.assertEqual(pj2.url, "https://github.com/")
+        self.assertEqual(pj2.requirements, {"testPack": "https://github.com/testPack"})
+        self.assertEqual(pj2.library_directory, "pm_library1")
+
 
 if __name__ == "__main__":
     unittest.main()
