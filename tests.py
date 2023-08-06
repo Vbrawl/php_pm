@@ -49,9 +49,11 @@ class Test_Utils(unittest.TestCase):
         open(os.path.join(directory, "hello", 'hi', "hello.txt"), 'w').close()
         open(os.path.join(directory, "hello2", 'hi.txt'), 'w').close()
 
-        self.assertTrue(os.path.exists(directory))
+        self.assertTrue(os.path.exists(directory), "Project directory was not detected")
         utils.delete_folder(directory)
-        self.assertFalse(os.path.exists(directory))
+        self.assertFalse(os.path.exists(directory), "Project directory was not removed")
+
+        self.assertRaises(FileNotFoundError, utils.delete_folder, directory)
 
 
 
@@ -87,6 +89,13 @@ class Test_Project(unittest.TestCase):
 
         dir3 = os.path.join(p2.path, p2.config.library_directory, p1.config.name)
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
+
+    def test_clear_library_folder(self):
+        dir3 = tempfile.mkdtemp("3", "project")
+        proj3 = Project.Project(dir3)
+        lib_path = os.path.join(dir3, proj3.config.library_directory)
+        proj3.clear_library_folder()
+        self.assertTrue(os.path.exists(lib_path), "Project library was removed")
 
 class Test_ProjectJson(unittest.TestCase):
     def test_constructor(self):
