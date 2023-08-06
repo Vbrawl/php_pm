@@ -19,6 +19,15 @@ class ProjectJson:
         self.url = get_value("project_url", "")
         self.requirements = get_value("project_requirements", {})
         self.library_directory = get_value("project_library_directory", "pm_library")
+    
+    def save(self, filepath):
+        utils.write_json(filepath, {
+            "project_name": self.name,
+            "project_version": self.version,
+            "project_url": self.url,
+            "project_requirements": self.requirements,
+            "project_library_directory": self.library_directory
+        })
 
 class Project:
     def __init__(self, path:str, project_json_filename:str = "project.json"):

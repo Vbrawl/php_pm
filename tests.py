@@ -140,7 +140,16 @@ class Test_ProjectJson(unittest.TestCase):
         self.assertEqual(pj2.url, "https://github.com/")
         self.assertEqual(pj2.requirements, {"testPack": "https://github.com/testPack"})
         self.assertEqual(pj2.library_directory, "pm_library1")
+    
+    def save(self):
+        pj = Project.ProjectJson(None)
+        f = tempfile.TemporaryFile("w", delete=False)
+        f.close()
 
+        pj.save(f.name)
+        pj2 = Project.ProjectJson(f.name)
+
+        self.assertEqual(pj, pj2, "Data was not correctly saved")
 
 if __name__ == "__main__":
     unittest.main()
