@@ -22,6 +22,21 @@ class Test_Utils(unittest.TestCase):
         data2 = utils.read_json(fname)
         self.assertEqual(data, data2, "Data was altered.")
     
+    def test_write_json(self):
+        data = {
+            "project_name": "TestProject",
+            "project_version": "1.6.5"
+        }
+        f = tempfile.TemporaryFile("w", delete=False)
+        fname = f.name
+        f.close()
+        utils.write_json(fname, data)
+
+        with open(fname, 'r') as file_:
+            data2 = json.load(file_)
+        
+        self.assertEqual(data, data2, "Data was altered.")
+
     def test_copy_file(self):
         f = tempfile.TemporaryFile("w", delete=False)
         f.close()

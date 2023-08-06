@@ -7,6 +7,11 @@ def read_json(filepath:str) -> list | dict:
     f.close()
     return js
 
+def write_json(filepath:str, json_obj:list|dict):
+    f = open(filepath, 'w')
+    json.dump(json_obj, f)
+    f.close()
+
 def copy_file(source:str, destination:str, chunk:int = 1024*10):
     with open(source, 'rb') as src, open(destination, 'wb') as dst:
         c = src.read(chunk)
