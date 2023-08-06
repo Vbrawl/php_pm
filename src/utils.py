@@ -48,3 +48,9 @@ def delete_folder(folder_path:str):
     for dir in directories[::-1]:
         os.rmdir(dir)
     os.rmdir(folder_path)
+
+def generate_php_config(filename:str, definitions:dict[str, str]):
+    with open(filename, 'w') as php:
+        php.write("<?php")
+        for key, value in definitions.items():
+            php.write(f'\ndefine("{key}", "{value}");')

@@ -69,6 +69,23 @@ class Test_Utils(unittest.TestCase):
         self.assertFalse(os.path.exists(directory), "Project directory was not removed")
 
         self.assertRaises(FileNotFoundError, utils.delete_folder, directory)
+    
+    def test_generate_php_config(self):
+        definitions = {
+            "test1": "hi",
+            "test2": "hi2"
+        }
+
+        output = """<?php
+define("test1", "hi");
+define("test2", "hi2");"""
+
+        f = tempfile.TemporaryFile("w", delete=False)
+        f.close()
+        utils.generate_php_config(f.name, definitions)
+        with open(f.name, 'r') as inp:
+            generated = inp.read()
+        self.assertEqual(output, generated, "PHP code generation doesn't generate the expected code.")
 
 
 
@@ -141,7 +158,7 @@ class Test_ProjectJson(unittest.TestCase):
         self.assertEqual(pj2.url, "https://github.com/")
         self.assertEqual(pj2.requirements, {"testPack": "https://github.com/testPack"})
         self.assertEqual(pj2.library_directory, "pm_library1")
-        self.assertEqual(pj2.relocation_config, "relocation.php")
+        self.assertEqual(pj2.relocation_config, "relocation.php1")
     
     def save(self):
         pj = Project.ProjectJson(None)
