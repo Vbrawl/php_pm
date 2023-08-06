@@ -130,7 +130,8 @@ class Test_ProjectJson(unittest.TestCase):
             "project_version": "1.0.1",
             "project_url": "https://github.com/",
             "project_requirements": {"testPack": "https://github.com/testPack"},
-            "project_library_directory": "pm_library1"
+            "project_library_directory": "pm_library1",
+            "project_relocation_config": "relocation.php1"
         }, f)
         f.close()
 
@@ -140,6 +141,7 @@ class Test_ProjectJson(unittest.TestCase):
         self.assertEqual(pj2.url, "https://github.com/")
         self.assertEqual(pj2.requirements, {"testPack": "https://github.com/testPack"})
         self.assertEqual(pj2.library_directory, "pm_library1")
+        self.assertEqual(pj2.relocation_config, "relocation.php")
     
     def save(self):
         pj = Project.ProjectJson(None)
