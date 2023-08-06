@@ -38,6 +38,20 @@ class Test_Utils(unittest.TestCase):
 
         self.assertTrue(os.path.isfile(os.path.join(directory, "testFile")), "Source directory does not exist.")
         self.assertTrue(os.path.isfile(os.path.join(directory+"2", "testFile")), "Destination directory does not exist.")
+    
+
+    def test_delete_folder(self):
+        directory = tempfile.mkdtemp("delete", "folders")
+        os.mkdir(os.path.join(directory, "hello"))
+        os.mkdir(os.path.join(directory, "hello2"))
+        os.mkdir(os.path.join(directory, "hello", "hi"))
+        open(os.path.join(directory, "hello", 'hi.txt'), 'w').close()
+        open(os.path.join(directory, "hello", 'hi', "hello.txt"), 'w').close()
+        open(os.path.join(directory, "hello2", 'hi.txt'), 'w').close()
+
+        self.assertTrue(os.path.exists(directory))
+        utils.delete_folder(directory)
+        self.assertFalse(os.path.exists(directory))
 
 
 

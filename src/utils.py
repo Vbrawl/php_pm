@@ -27,3 +27,19 @@ def copy_tree(source:str, destination:str):
         elif os.path.isdir(src):
             os.makedirs(dst)
             listed.extend(os.listdir(src))
+
+
+def delete_folder(folder_path:str):
+    listed = list(map(lambda x: os.path.join(folder_path, x), os.listdir(folder_path)))
+    directories = []
+    while listed:
+        item = listed.pop(0)
+        if os.path.isdir(item):
+            listed.extend(map(lambda x: os.path.join(item, x), os.listdir(item)))
+            directories.append(item)
+        elif os.path.isfile(item) or os.path.islink(item):
+            os.unlink(item)
+    
+    for dir in directories[::-1]:
+        os.rmdir(dir)
+    os.rmdir(folder_path)
