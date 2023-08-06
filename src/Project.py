@@ -27,7 +27,10 @@ class Project:
         self.config = ProjectJson(os.path.join(path, project_json_filename))
     
     def import_project(self, project: 'Project'):
-        src = project.path
         dest = os.path.join(self.path, self.config.library_directory, project.config.name)
-
-        utils.copy_tree(src, dest)
+        utils.copy_tree(project.path, dest)
+    
+    def clear_library_folder(self):
+        lib_folder = os.path.join(self.path, self.config.library_directory)
+        if os.path.isdir(lib_folder): utils.delete_folder(lib_folder)
+        os.mkdir(lib_folder)
