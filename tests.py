@@ -223,6 +223,19 @@ class Test_ProjectLibrary(unittest.TestCase):
                 found_projects += 1
         
         self.assertEqual(found_projects, len(projects))
+    
+    def test_get_project(self):
+        tmpdir = tempfile.mkdtemp("lib1", "projects")
+        os.mkdir(os.path.join(tmpdir, "Project1"))
+        with open(os.path.join(tmpdir, "Project1", "project.json"), 'w') as js:
+            json.dump({"project_name": "Project1", "project_url": "Project1URL"}, js)
+        os.mkdir(os.path.join(tmpdir, "Project2"))
+        with open(os.path.join(tmpdir, "Project2", "project.json"), 'w') as js:
+            json.dump({"project_name": "Project2", "project_url": "Project2URL"}, js)
+
+        pl = Project.ProjectLibrary(tmpdir)
+        self.assertNotEqual(pl.get_project("Project1"), None)
+        self.assertEqual(pl.get_project("Project3"), None)
 
 if __name__ == "__main__":
     unittest.main()

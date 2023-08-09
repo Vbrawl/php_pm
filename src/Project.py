@@ -51,10 +51,16 @@ class Project(ProjectJson):
 
 
 class ProjectLibrary:
-    def __init__(self, path:str):
+    def __init__(self, path:Optional[str]):
         self.path = path
         self.projects:list[Project] = []
-        if path: self.load_projects()
+        self.load_projects()
     
     def load_projects(self):
-        self.projects = sorted(list(map(lambda x: Project(os.path.join(self.path, x)), os.listdir(self.path))), key=lambda p: p.name)
+        if self.path is not None:
+            self.projects = sorted(list(map(lambda x: Project(os.path.join(self.path, x)), os.listdir(self.path))), key=lambda p: p.name) # type: ignore
+    
+    def get_project(self, name):
+        index = utils.binary_search(self.projects, name, key=lambda x: x.name)
+        if index is not None:
+            return self.projects[index]
