@@ -45,3 +45,6 @@ class Project:
         lib_folder = os.path.join(self.path, self.config.library_directory)
         if os.path.isdir(lib_folder): utils.delete_folder(lib_folder)
         os.mkdir(lib_folder)
+    
+    def register_project(self, project: 'Project'):
+        self.config.requirements[project.config.name] = project.config.url

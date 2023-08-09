@@ -128,10 +128,19 @@ class Test_Project(unittest.TestCase):
         lib_path = os.path.join(dir3, proj3.config.library_directory)
         proj3.clear_library_folder()
         self.assertTrue(os.path.exists(lib_path), "Project library was removed")
+    
+    def test_register_project(self):
+        dir4 = tempfile.mkdtemp("4", "project")
+        dir5 = tempfile.mkdtemp("5", "project")
+        with open(os.path.join(dir5, "project.json"), 'w') as js:
+            json.dump({"project_name": "TestName", "project_url": "TestURL"}, js) 
+        p = Project.Project(dir4)
+        self.assertEqual(p.config.requirements, {})
+        p.register_project(Project.Project(dir5))
+        self.assertEqual(p.config.requirements, {"TestName": "TestURL"})
 
 class Test_ProjectJson(unittest.TestCase):
     def test_constructor(self):
-
         pj = Project.ProjectJson(None)
 
         self.assertEqual(pj.name, "Project")
