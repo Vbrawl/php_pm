@@ -86,6 +86,27 @@ define("test2", "hi2");"""
         with open(f.name, 'r') as inp:
             generated = inp.read()
         self.assertEqual(output, generated, "PHP code generation doesn't generate the expected code.")
+    
+    def test_binary_search(self):
+        testlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+        # Test every possible case
+        for i in range(0, 12):
+            expected = i if i != 11 else None
+            self.assertEqual(utils.binary_search(testlist, i), expected)
+
+        rev_testlist = list(reversed(testlist))
+        for i in range(-1, 11):
+            num = 10 - i
+            expected = i if i != -1 else None
+            self.assertEqual(utils.binary_search(rev_testlist, num, ascending=False), expected)
+
+        testlist2 = list(map(lambda x:[x], testlist))
+        for i in range(0, 12):
+            expected = i if i != 11 else None
+            self.assertEqual(utils.binary_search(testlist2, i, key = lambda x: x[0]), expected)
+
+
 
 
 

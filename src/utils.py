@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 
 def read_json(filepath:str) -> list | dict:
     f = open(filepath)
@@ -54,3 +55,22 @@ def generate_php_config(filename:str, definitions:dict[str, str]):
         php.write("<?php")
         for key, value in definitions.items():
             php.write(f'\ndefine("{key}", "{value}");')
+
+def binary_search(lst:list[Any], searchFor:Any, key = lambda x:x, ascending:bool = True):
+    start = 0
+    end = len(lst) - 1
+    while start <= end:
+        mid = (start + end) // 2
+        klm = key(lst[mid])
+        if klm == searchFor:
+            return mid
+        elif klm > searchFor:
+            if ascending:
+                end = mid - 1
+            else:
+                start = mid + 1
+        else: # klm < searchFor
+            if ascending:
+                start = mid + 1
+            else:
+                end = mid - 1
