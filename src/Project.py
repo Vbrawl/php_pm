@@ -53,8 +53,8 @@ class Project(ProjectJson):
 class ProjectLibrary:
     def __init__(self, path:str):
         self.path = path
-        self.projects = []
-        self.load_projects()
+        self.projects:list[Project] = []
+        if path: self.load_projects()
     
     def load_projects(self):
-        self.projects = list(map(lambda x: Project(os.path.join(self.path, x)), os.listdir(self.path)))
+        self.projects = sorted(list(map(lambda x: Project(os.path.join(self.path, x)), os.listdir(self.path))), key=lambda p: p.name)
