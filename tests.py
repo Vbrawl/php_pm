@@ -119,13 +119,13 @@ class Test_Project(unittest.TestCase):
 
         p2.import_project(p1)
 
-        dir3 = os.path.join(p2.path, p2.config.library_directory, p1.config.name)
+        dir3 = os.path.join(p2.path, p2.library_directory, p1.name)
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
 
     def test_clear_library_folder(self):
         dir3 = tempfile.mkdtemp("3", "project")
         proj3 = Project.Project(dir3)
-        lib_path = os.path.join(dir3, proj3.config.library_directory)
+        lib_path = os.path.join(dir3, proj3.library_directory)
         proj3.clear_library_folder()
         self.assertTrue(os.path.exists(lib_path), "Project library was removed")
     
@@ -135,9 +135,9 @@ class Test_Project(unittest.TestCase):
         with open(os.path.join(dir5, "project.json"), 'w') as js:
             json.dump({"project_name": "TestName", "project_url": "TestURL"}, js) 
         p = Project.Project(dir4)
-        self.assertEqual(p.config.requirements, {})
+        self.assertEqual(p.requirements, {})
         p.register_project(Project.Project(dir5))
-        self.assertEqual(p.config.requirements, {"TestName": "TestURL"})
+        self.assertEqual(p.requirements, {"TestName": "TestURL"})
 
 class Test_ProjectJson(unittest.TestCase):
     def test_constructor(self):
@@ -178,6 +178,30 @@ class Test_ProjectJson(unittest.TestCase):
         pj2 = Project.ProjectJson(f.name)
 
         self.assertEqual(pj, pj2, "Data was not correctly saved")
+
+
+class Test_ProjectLibrary(unittest.TestCase):
+    def test_constructor_AND_load_projects(self):
+        tmpdir = tempfile.mkdtemp("lib1", "projects")
+        os.mkdir(os.path.join(tmpdir, "Project1"))
+        with open(os.path.join(tmpdir, "Project1", "project.json"), 'w') as js:
+            json.dump({"project_name": "Project1", "project_url": "Project1URL"}, js)
+        os.mkdir(os.path.join(tmpdir, "Project2"))
+        with open(os.path.join(tmpdir, "Project2", "project.json"), 'w') as js:
+            json.dump({"project_name": "Project2", "project_url": "Project2URL"}, js)
+        
+        pl = Project.ProjectLibrary(tmpdir)
+        projects = [
+            Project.Project(os.path.join(tmpdir, "Project1")),
+            Project.Project(os.path.join(tmpdir, "Project2"))
+        ]
+
+        found_projects = 0
+        for i, proj in enumerate(pl.projects):
+            if proj.name == projects[i].name:
+                found_projects += 1
+        
+        self.assertEqual(found_projects, len(projects))
 
 if __name__ == "__main__":
     unittest.main()

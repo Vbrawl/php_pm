@@ -31,20 +31,30 @@ class ProjectJson:
             "project_relocation_config": self.relocation_config
         })
 
-class Project:
+class Project(ProjectJson):
     def __init__(self, path:str, project_json_filename:str = "project.json"):
         self.path = path
         self.project_json_filename = project_json_filename
-        self.config = ProjectJson(os.path.join(path, project_json_filename))
+        super().__init__(os.path.join(path, project_json_filename))
     
     def import_project(self, project: 'Project'):
-        dest = os.path.join(self.path, self.config.library_directory, project.config.name)
+        dest = os.path.join(self.path, self.library_directory, project.name)
         utils.copy_tree(project.path, dest)
     
     def clear_library_folder(self):
-        lib_folder = os.path.join(self.path, self.config.library_directory)
+        lib_folder = os.path.join(self.path, self.library_directory)
         if os.path.isdir(lib_folder): utils.delete_folder(lib_folder)
         os.mkdir(lib_folder)
     
     def register_project(self, project: 'Project'):
-        self.config.requirements[project.config.name] = project.config.url
+        self.requirements[project.name] = project.url
+
+
+class ProjectLibrary:
+    def __init__(self, path:str):
+        self.path = path
+        self.projects = []
+        self.load_projects()
+    
+    def load_projects(self):
+        self.projects = list(map(lambda x: Project(os.path.join(self.path, x)), os.listdir(self.path)))
