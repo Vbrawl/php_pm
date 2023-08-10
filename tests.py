@@ -178,7 +178,7 @@ class Test_Project(unittest.TestCase):
 
         p2.import_project(p1)
 
-        dir3 = os.path.join(p2.path, p2.library_directory, p1.name)
+        dir3 = os.path.join(p2.path, p2.library_directory, os.path.basename(p1.path))
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
 
     def test_clear_library_folder(self):
@@ -286,6 +286,23 @@ class Test_ProjectLibrary(unittest.TestCase):
         pl.add_project(Project.Project(proj3))
         self.assertNotEqual(pl.get_project("Project3"), None)
         self.assertEqual(pl.projects[2].name, "Project3", "Project List lost sorting")
+    
+    def test_remove_project(self):
+        dir = os.path.join(self.tmpdir, "RemoveProject-Project")
+        os.mkdir(dir)
+        with open(os.path.join(dir, 'project.json'), 'w') as js:
+            json.dump({"project_name": "RemoveProject", "project_url": "RemoveProjectURL"}, js)
+        dir2 = tempfile.mkdtemp("Project2", "RemoveProject")
+        with open(os.path.join(dir2, 'project.json'), 'w') as js:
+            json.dump({"project_name": "RemoveProject2", "project_url": "RemoveProject2URL"}, js)
+
+        pl = Project.ProjectLibrary(self.tmpdir)
+        pl.remove_project("RemoveProject")
+        pl.remove_project("RemoveProject2")
+        self.assertEqual(pl.get_project("RemoveProject"), None)
+        self.assertEqual(pl.get_project("RemoveProject2"), None)
+        self.assertFalse(os.path.exists(dir), "Project folder was not deleted inside of the library")
+        self.assertTrue(os.path.exists(dir2), "Project folder was deleted outside of the library")
 
 if __name__ == "__main__":
     unittest.main()

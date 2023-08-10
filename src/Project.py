@@ -38,7 +38,7 @@ class Project(ProjectJson):
         super().__init__(os.path.join(path, project_json_filename))
     
     def import_project(self, project: 'Project'):
-        dest = os.path.join(self.path, self.library_directory, project.name)
+        dest = os.path.join(self.path, self.library_directory, os.path.basename(project.path))
         utils.copy_tree(project.path, dest)
     
     def clear_library_folder(self):
@@ -60,13 +60,21 @@ class ProjectLibrary:
         if self.path is not None:
             self.projects = sorted(list(map(lambda x: Project(os.path.join(self.path, x)), os.listdir(self.path))), key=lambda p: p.name) # type: ignore
     
-    def get_project(self, name):
+    def get_project(self, name:str):
         index = utils.binary_search(self.projects, name, key=lambda x: x.name)
         if index is not None:
             return self.projects[index]
     
     def add_project(self, project:Project):
         if self.path is not None:
-            dest = os.path.join(self.path, project.name)
+            dest = os.path.join(self.path, os.path.basename(project.path))
             utils.copy_tree(project.path, dest)
+            project = Project(dest)
         utils.append_sorted(self.projects, project, key = lambda x: x.name)
+    
+    def remove_project(self, name:str):
+        index = utils.binary_search(self.projects, name, key=lambda x: x.name)
+        if index is not None:
+            project = self.projects.pop(index)
+            if self.path is not None and project.path.startswith(self.path):
+                utils.delete_folder(project.path)
