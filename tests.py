@@ -88,9 +88,14 @@ define("test2", "hi2");"""
         self.assertEqual(output, generated, "PHP code generation doesn't generate the expected code.")
     
     def test_binary_search(self):
-        testlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        emptylist = []
+        self.assertEqual(utils.binary_search(emptylist, 11), None)
 
-        # Test every possible case
+        singleitemlist = [1]
+        self.assertEqual(utils.binary_search(singleitemlist, 1), 0)
+        self.assertEqual(utils.binary_search(singleitemlist, 11), None)
+
+        testlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         for i in range(0, 12):
             expected = i if i != 11 else None
             self.assertEqual(utils.binary_search(testlist, i), expected)
@@ -99,7 +104,7 @@ define("test2", "hi2");"""
         for i in range(-1, 11):
             num = 10 - i
             expected = i if i != -1 else None
-            self.assertEqual(utils.binary_search(rev_testlist, num, ascending=False), expected)
+            self.assertEqual(utils.binary_search(rev_testlist, num), expected)
 
         testlist2 = list(map(lambda x:[x], testlist))
         for i in range(0, 12):

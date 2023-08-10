@@ -56,7 +56,15 @@ def generate_php_config(filename:str, definitions:dict[str, str]):
         for key, value in definitions.items():
             php.write(f'\ndefine("{key}", "{value}");')
 
-def binary_search(lst:list[Any], searchFor:Any, key = lambda x:x, ascending:bool = True):
+def binary_search(lst:list[Any], searchFor:Any, key = lambda x:x):
+    llst = len(lst)
+    if llst == 1 and key(lst[0]) == searchFor:
+        return 0
+    elif llst < 2:
+        return None
+    else:
+        ascending = key(lst[0]) < key(lst[-1])
+
     start = 0
     end = len(lst) - 1
     while start <= end:
