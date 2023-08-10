@@ -69,5 +69,4 @@ class ProjectLibrary:
         if self.path is not None:
             dest = os.path.join(self.path, project.name)
             utils.copy_tree(project.path, dest)
-        self.projects.append(project)
-        self.projects.sort(key = lambda x: x.name)
+        utils.append_sorted(self.projects, project, key = lambda x: x.name)
