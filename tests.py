@@ -112,31 +112,35 @@ define("test2", "hi2");"""
 
 import Project
 class Test_Project(unittest.TestCase):
-    def test_import_project(self):
-        dir1 = tempfile.mkdtemp("1", "project")
-        dir2 = tempfile.mkdtemp("2", "project")
+    def __init__(self, *args, **kwargs):
+        self.dir1 = tempfile.mkdtemp("1", "Project")
+        self.dir2 = tempfile.mkdtemp("2", "Project")
 
-        project_json_1 = {
+        self.config1 = {
             "project_name": "TestProject1",
             "project_version": "1.6.5",
             "project_url": "https://github.com/",
             "project_requirements": {},
-            "project_library_directory": "pm_library"
+            "project_library_directory": "pm_library",
+            "project_relocation_config": "relocation.php"
         }
 
-        project_json = open(os.path.join(dir1, "project.json"), 'w')
-        json.dump(project_json_1, project_json)
-        project_json.close()
+        self.config2 = self.config1.copy()
+        self.config2["project_name"] = "TestProject2"
+        self.config2["project_url"] += "2"
 
-        project_json_2 = project_json_1
-        project_json_2["project_name"] = "TestProject2"
+        with open(os.path.join(self.dir1, "project.json"), 'w') as js:
+            json.dump(self.config1, js)
+        
+        with open(os.path.join(self.dir2, "project.json"), 'w') as js:
+            json.dump(self.config2, js)
 
-        project_json = open(os.path.join(dir2, "project.json"), "w")
-        json.dump(project_json_2, project_json)
-        project_json.close()
+        super().__init__(*args, **kwargs)
 
-        p1 = Project.Project(dir1)
-        p2 = Project.Project(dir2)
+
+    def test_import_project(self):
+        p1 = Project.Project(self.dir1)
+        p2 = Project.Project(self.dir2)
 
         p2.import_project(p1)
 
@@ -144,23 +148,36 @@ class Test_Project(unittest.TestCase):
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
 
     def test_clear_library_folder(self):
-        dir3 = tempfile.mkdtemp("3", "project")
-        proj3 = Project.Project(dir3)
-        lib_path = os.path.join(dir3, proj3.library_directory)
-        proj3.clear_library_folder()
+        proj = Project.Project(self.dir1)
+        lib_path = os.path.join(self.dir1, proj.library_directory)
+        proj.clear_library_folder()
         self.assertTrue(os.path.exists(lib_path), "Project library was removed")
     
     def test_register_project(self):
-        dir4 = tempfile.mkdtemp("4", "project")
-        dir5 = tempfile.mkdtemp("5", "project")
-        with open(os.path.join(dir5, "project.json"), 'w') as js:
-            json.dump({"project_name": "TestName", "project_url": "TestURL"}, js) 
-        p = Project.Project(dir4)
-        self.assertEqual(p.requirements, {})
-        p.register_project(Project.Project(dir5))
-        self.assertEqual(p.requirements, {"TestName": "TestURL"})
+        p1 = Project.Project(self.dir1)
+        p2 = Project.Project(self.dir2)
+        self.assertEqual(p1.requirements, {})
+        p1.register_project(p2)
+        self.assertEqual(p1.requirements, {p2.name: p2.url})
 
 class Test_ProjectJson(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        self.data = {
+            "project_name": "Project123",
+            "project_version": "1.0.1",
+            "project_url": "https://github.com/",
+            "project_requirements": {"testPack": "https://github.com/testPack"},
+            "project_library_directory": "pm_library1",
+            "project_relocation_config": "relocation.php1"
+        }
+
+        f = tempfile.TemporaryFile("w", delete=False)
+        json.dump(self.data, f)
+        f.close()
+        self.pjn = f.name
+
+        super().__init__(*args, **kwargs)
+
     def test_constructor(self):
         pj = Project.ProjectJson(None)
 
@@ -170,35 +187,21 @@ class Test_ProjectJson(unittest.TestCase):
         self.assertEqual(pj.requirements, {})
         self.assertEqual(pj.library_directory, "pm_library")
 
-
-        f = tempfile.TemporaryFile("w", delete=False)
-        json.dump({
-            "project_name": "Project123",
-            "project_version": "1.0.1",
-            "project_url": "https://github.com/",
-            "project_requirements": {"testPack": "https://github.com/testPack"},
-            "project_library_directory": "pm_library1",
-            "project_relocation_config": "relocation.php1"
-        }, f)
-        f.close()
-
-        pj2 = Project.ProjectJson(f.name)
-        self.assertEqual(pj2.name, "Project123")
-        self.assertEqual(pj2.version, "1.0.1")
-        self.assertEqual(pj2.url, "https://github.com/")
-        self.assertEqual(pj2.requirements, {"testPack": "https://github.com/testPack"})
-        self.assertEqual(pj2.library_directory, "pm_library1")
-        self.assertEqual(pj2.relocation_config, "relocation.php1")
+        pj2 = Project.ProjectJson(self.pjn)
+        for k, v in self.data.items():
+            self.assertEqual(pj2.__dict__[k[len("project_"):]], v)
     
     def save(self):
-        pj = Project.ProjectJson(None)
         f = tempfile.TemporaryFile("w", delete=False)
         f.close()
 
+        pj = Project.ProjectJson(self.pjn)
         pj.save(f.name)
         pj2 = Project.ProjectJson(f.name)
 
-        self.assertEqual(pj, pj2, "Data was not correctly saved")
+        for k in self.data.keys():
+            k = k[len("project_"):]
+            self.assertEqual(pj.__dict__[k], pj2.__dict__[k])
 
 
 class Test_ProjectLibrary(unittest.TestCase):
