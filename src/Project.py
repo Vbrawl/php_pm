@@ -70,3 +70,4 @@ class ProjectLibrary:
             dest = os.path.join(self.path, project.name)
             utils.copy_tree(project.path, dest)
         self.projects.append(project)
+        self.projects.sort(key = lambda x: x.name)

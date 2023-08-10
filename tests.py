@@ -236,16 +236,22 @@ class Test_ProjectLibrary(unittest.TestCase):
     def test_get_project(self):
         pl = Project.ProjectLibrary(self.tmpdir)
         self.assertNotEqual(pl.get_project("Project1"), None)
-        self.assertEqual(pl.get_project("Project4"), None)
+        self.assertEqual(pl.get_project("NonExistent-Project"), None)
     
     def test_add_project(self):
         proj3 = tempfile.mkdtemp("3", "Project")
         with open(os.path.join(proj3, "project.json"), 'w') as js:
             json.dump({"project_name": "Project3", "project_url": "Project3URL"}, js)
-        pl = Project.ProjectLibrary(self.tmpdir)
-        pl.add_project(Project.Project(proj3))
+        proj4 = tempfile.mkdtemp("4", "Project")
+        with open(os.path.join(proj4, "project.json"), 'w') as js:
+            json.dump({"project_name": "Project4", "project_url": "Project4URL"}, js)
 
+        pl = Project.ProjectLibrary(self.tmpdir)
+        pl.add_project(Project.Project(proj4))
+        self.assertNotEqual(pl.get_project("Project4"), None)
+        pl.add_project(Project.Project(proj3))
         self.assertNotEqual(pl.get_project("Project3"), None)
+        self.assertEqual(pl.projects[2].name, "Project3", "Project List lost sorting")
 
 if __name__ == "__main__":
     unittest.main()
