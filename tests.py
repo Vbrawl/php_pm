@@ -110,6 +110,35 @@ define("test2", "hi2");"""
         for i in range(0, 12):
             expected = i if i != 11 else None
             self.assertEqual(utils.binary_search(testlist2, i, key = lambda x: x[0]), expected)
+    
+    def test_append_sorted(self):
+        lst = []
+        utils.append_sorted(lst, 1)
+        utils.append_sorted(lst, 10)
+        self.assertEqual(lst, [1, 10])
+
+        utils.append_sorted(lst, 5)
+        self.assertEqual(lst, [1, 5, 10])
+
+        lst.reverse() # [10, 5, 1]
+
+        utils.append_sorted(lst, 3)
+        self.assertEqual(lst, [10, 5, 3, 1])
+
+        utils.append_sorted(lst, 2, ascending=False)
+        self.assertEqual(lst, [10, 5, 3, 2, 1])
+
+        utils.append_sorted(lst, 2)
+        self.assertEqual(lst, [10, 5, 3, 2, 2, 1])
+
+        utils.append_sorted(lst, 0)
+        self.assertEqual(lst, [10, 5, 3, 2, 2, 1, 0])
+
+        utils.append_sorted(lst, 11)
+        self.assertEqual(lst, [11, 10, 5, 3, 2, 2, 1, 0])
+
+        utils.append_sorted(lst, 11)
+        self.assertEqual(lst, [11, 11, 10, 5, 3, 2, 2, 1, 0])
 
 
 

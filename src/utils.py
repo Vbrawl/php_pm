@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any
+from typing import Any, Optional
 
 def read_json(filepath:str) -> list | dict:
     f = open(filepath)
@@ -82,3 +82,17 @@ def binary_search(lst:list[Any], searchFor:Any, key = lambda x:x):
                 start = mid + 1
             else:
                 end = mid - 1
+
+def append_sorted(lst:list[Any], itemToAdd:Any, key = lambda x:x, ascending:Optional[bool] = None):
+    if ascending is None:
+        if len(lst) < 2:
+            ascending = True
+        else:
+            ascending = key(lst[0]) < key(lst[-1])
+    
+    keyedItem = key(itemToAdd)
+    for i, item in enumerate(lst):
+        if ascending != (not (keyedItem < key(item))):
+                lst.insert(i, itemToAdd)
+                return
+    lst.append(itemToAdd)
