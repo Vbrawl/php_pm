@@ -202,19 +202,25 @@ class Test_ProjectJson(unittest.TestCase):
 
 
 class Test_ProjectLibrary(unittest.TestCase):
-    def test_constructor_AND_load_projects(self):
-        tmpdir = tempfile.mkdtemp("lib1", "projects")
-        os.mkdir(os.path.join(tmpdir, "Project1"))
-        with open(os.path.join(tmpdir, "Project1", "project.json"), 'w') as js:
+    def __init__(self, *args, **kwargs):
+        self.tmpdir = tempfile.mkdtemp("lib", "projects")
+        self.project1 = os.path.join(self.tmpdir, "Project1")
+        self.project2 = os.path.join(self.tmpdir, "Project2")
+
+
+        os.mkdir(self.project1)
+        with open(os.path.join(self.project1, "project.json"), 'w') as js:
             json.dump({"project_name": "Project1", "project_url": "Project1URL"}, js)
-        os.mkdir(os.path.join(tmpdir, "Project2"))
-        with open(os.path.join(tmpdir, "Project2", "project.json"), 'w') as js:
+        os.mkdir(self.project2)
+        with open(os.path.join(self.project2, "project.json"), 'w') as js:
             json.dump({"project_name": "Project2", "project_url": "Project2URL"}, js)
-        
-        pl = Project.ProjectLibrary(tmpdir)
+        super().__init__(*args, **kwargs)
+
+    def test_constructor_AND_load_projects(self):
+        pl = Project.ProjectLibrary(self.tmpdir)
         projects = [
-            Project.Project(os.path.join(tmpdir, "Project1")),
-            Project.Project(os.path.join(tmpdir, "Project2"))
+            Project.Project(self.project1),
+            Project.Project(self.project2)
         ]
 
         found_projects = 0
@@ -225,17 +231,18 @@ class Test_ProjectLibrary(unittest.TestCase):
         self.assertEqual(found_projects, len(projects))
     
     def test_get_project(self):
-        tmpdir = tempfile.mkdtemp("lib1", "projects")
-        os.mkdir(os.path.join(tmpdir, "Project1"))
-        with open(os.path.join(tmpdir, "Project1", "project.json"), 'w') as js:
-            json.dump({"project_name": "Project1", "project_url": "Project1URL"}, js)
-        os.mkdir(os.path.join(tmpdir, "Project2"))
-        with open(os.path.join(tmpdir, "Project2", "project.json"), 'w') as js:
-            json.dump({"project_name": "Project2", "project_url": "Project2URL"}, js)
-
-        pl = Project.ProjectLibrary(tmpdir)
+        pl = Project.ProjectLibrary(self.tmpdir)
         self.assertNotEqual(pl.get_project("Project1"), None)
-        self.assertEqual(pl.get_project("Project3"), None)
+        self.assertEqual(pl.get_project("Project4"), None)
+    
+    def test_add_project(self):
+        proj3 = tempfile.mkdtemp("3", "Project")
+        with open(os.path.join(proj3, "project.json"), 'w') as js:
+            json.dump({"project_name": "Project3", "project_url": "Project3URL"}, js)
+        pl = Project.ProjectLibrary(self.tmpdir)
+        pl.add_project(Project.Project(proj3))
+
+        self.assertNotEqual(pl.get_project("Project3"), None)
 
 if __name__ == "__main__":
     unittest.main()

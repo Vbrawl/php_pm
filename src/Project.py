@@ -64,3 +64,9 @@ class ProjectLibrary:
         index = utils.binary_search(self.projects, name, key=lambda x: x.name)
         if index is not None:
             return self.projects[index]
+    
+    def add_project(self, project:Project):
+        if self.path is not None:
+            dest = os.path.join(self.path, project.name)
+            utils.copy_tree(project.path, dest)
+        self.projects.append(project)
