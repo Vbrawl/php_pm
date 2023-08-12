@@ -14,7 +14,7 @@ class Test_Utils(unittest.TestCase):
         }
 
 
-        f = tempfile.TemporaryFile("w", delete=False)
+        f = tempfile.NamedTemporaryFile("w", delete=False)
         fname = f.name
         json.dump(data, f)
         f.close()
@@ -27,7 +27,7 @@ class Test_Utils(unittest.TestCase):
             "project_name": "TestProject",
             "project_version": "1.6.5"
         }
-        f = tempfile.TemporaryFile("w", delete=False)
+        f = tempfile.NamedTemporaryFile("w", delete=False)
         fname = f.name
         f.close()
         utils.write_json(fname, data)
@@ -38,7 +38,7 @@ class Test_Utils(unittest.TestCase):
         self.assertEqual(data, data2, "Data was altered.")
 
     def test_copy_file(self):
-        f = tempfile.TemporaryFile("w", delete=False)
+        f = tempfile.NamedTemporaryFile("w", delete=False)
         f.close()
         utils.copy_file(f.name, f.name+".2")
 
@@ -80,7 +80,7 @@ class Test_Utils(unittest.TestCase):
 define("test1", "hi");
 define("test2", "hi2");"""
 
-        f = tempfile.TemporaryFile("w", delete=False)
+        f = tempfile.NamedTemporaryFile("w", delete=False)
         f.close()
         utils.generate_php_config(f.name, definitions)
         with open(f.name, 'r') as inp:
@@ -205,7 +205,7 @@ class Test_ProjectJson(unittest.TestCase):
             "project_relocation_config": "relocation.php1"
         }
 
-        f = tempfile.TemporaryFile("w", delete=False)
+        f = tempfile.NamedTemporaryFile("w", delete=False)
         json.dump(self.data, f)
         f.close()
         self.pjn = f.name
@@ -226,7 +226,7 @@ class Test_ProjectJson(unittest.TestCase):
             self.assertEqual(pj2.__dict__[k[len("project_"):]], v)
     
     def save(self):
-        f = tempfile.TemporaryFile("w", delete=False)
+        f = tempfile.NamedTemporaryFile("w", delete=False)
         f.close()
 
         pj = Project.ProjectJson(self.pjn)
