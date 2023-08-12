@@ -58,6 +58,8 @@ class ProjectLibrary:
     
     def load_projects(self):
         if self.path is not None:
+            if not os.path.exists(self.path):
+                os.mkdir(self.path)
             self.projects = sorted(list(map(lambda x: Project(os.path.join(self.path, x)), os.listdir(self.path))), key=lambda p: p.name) # type: ignore
     
     def get_project(self, name:str):

@@ -269,6 +269,10 @@ class Test_ProjectLibrary(unittest.TestCase):
                 found_projects += 1
         
         self.assertEqual(found_projects, len(projects))
+
+        templib = os.path.join(self.tmpdir, "TempLib")
+        pl2 = Project.ProjectLibrary(templib)
+        self.assertTrue(os.path.exists(templib), "Temporary inexistent folder was not created.")
     
     def test_get_project(self):
         pl = Project.ProjectLibrary(self.tmpdir)
