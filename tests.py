@@ -224,6 +224,9 @@ class Test_ProjectJson(unittest.TestCase):
         pj2 = Project.ProjectJson(self.pjn)
         for k, v in self.data.items():
             self.assertEqual(pj2.__dict__[k[len("project_"):]], v)
+
+        nepj = Project.ProjectJson("NonExistentProjectFolder/project.json")
+        self.assertEqual(nepj.name, "NonExistentProjectFolder")
     
     def save(self):
         f = tempfile.NamedTemporaryFile("w", delete=False)

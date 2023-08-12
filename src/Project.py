@@ -14,7 +14,7 @@ class ProjectJson:
 
         get_value = lambda key, default_ = "": project_json[key] if key in project_json.keys() else default_
 
-        self.name = get_value("project_name", "Project")
+        self.name = get_value("project_name", os.path.basename(os.path.dirname(project_json_path)) if project_json_path is not None else "Project")
         self.version = get_value("project_version", "1.0.0")
         self.url = get_value("project_url", "")
         self.requirements = get_value("project_requirements", {})
