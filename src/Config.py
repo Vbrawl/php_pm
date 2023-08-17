@@ -3,7 +3,10 @@ import os, sys
 app_name = "PHPPM"
 
 if os.name == "nt":
-    app_directory = os.path.join(os.getenv("APPDATA"), app_name)
+    appdata = os.getenv("APPDATA")
+    if appdata is None:
+        appdata = "C:\\ProgramData"
+    app_directory = os.path.join(appdata, app_name)
 elif os.getenv("TERMUX_VERSION", None) is not None:
     app_directory = os.path.join("/data/data/com.termux/files/usr/etc", app_name)
 else:
