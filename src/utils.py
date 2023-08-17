@@ -105,3 +105,13 @@ def append_sorted(lst:list[Any], itemToAdd:Any, key = lambda x:x, ascending:Opti
                 lst.insert(i, itemToAdd)
                 return
     lst.append(itemToAdd)
+
+def remove_subpath(path_:str, subp:str):
+    pathl = path_.replace("\\", "/").split('/')
+    subpl = subp.replace("\\", "/").split('/')
+
+    while subpl != [] and pathl != [] and subpl[0] == pathl[0]:
+        subpl.pop(0)
+        pathl.pop(0)
+    
+    return '/'.join(pathl)
