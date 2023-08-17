@@ -50,11 +50,20 @@ def delete_folder(folder_path:str):
         os.rmdir(dir)
     os.rmdir(folder_path)
 
-def generate_php_config(filename:str, definitions:dict[str, str]):
+def generate_php_config(filename:str, definitions:dict[str, str] = {}, sdir:bool = False, requirement_files:list[str] = []):
     with open(filename, 'w') as php:
-        php.write("<?php")
+        php.write("<?php\n")
+        for fname in requirement_files:
+            php.write(f"require_once('{fname}');\n")
+
+        if sdir:
+            php.write("$sdir = str_replace('\\\\', '/', __DIR__);\n")
+
         for key, value in definitions.items():
-            php.write(f'\ndefine("{key}", "{value}");')
+            php.write(f"define('{key}', {'$sdir.' if sdir else ''}'{value}');\n")
+
+        if sdir:
+            php.write("unset($sdir);\n")
 
 def binary_search(lst:list[Any], searchFor:Any, key = lambda x:x):
     llst = len(lst)

@@ -40,6 +40,8 @@ class Project(ProjectJson):
     def import_project(self, project: 'Project'):
         dest = os.path.join(self.path, self.library_directory, os.path.basename(project.path))
         utils.copy_tree(project.path, dest)
+        relocation_file = os.path.join(dest, project.relocation_config)
+        utils.generate_php_config(relocation_file, requirement_files = [f"../../{self.relocation_config}"])
     
     def clear_library_folder(self):
         lib_folder = os.path.join(self.path, self.library_directory)

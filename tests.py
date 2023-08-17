@@ -76,13 +76,28 @@ class Test_Utils(unittest.TestCase):
             "test2": "hi2"
         }
 
+        requirements = ["test_file.php"]
+
         output = """<?php
-define("test1", "hi");
-define("test2", "hi2");"""
+require_once('test_file.php');
+$sdir = str_replace('\\\\', '/', __DIR__);
+define('test1', $sdir.'hi');
+define('test2', $sdir.'hi2');
+unset($sdir);
+"""
 
         f = tempfile.NamedTemporaryFile("w", delete=False)
         f.close()
-        utils.generate_php_config(f.name, definitions)
+        utils.generate_php_config(f.name, definitions, True, requirements)
+        with open(f.name, 'r') as inp:
+            generated = inp.read()
+        self.assertEqual(output, generated, "PHP code generation doesn't generate the expected code.")
+
+        output = """<?php
+define('test1', 'hi');
+define('test2', 'hi2');
+"""
+        utils.generate_php_config(f.name, definitions, False)
         with open(f.name, 'r') as inp:
             generated = inp.read()
         self.assertEqual(output, generated, "PHP code generation doesn't generate the expected code.")
@@ -180,6 +195,7 @@ class Test_Project(unittest.TestCase):
 
         dir3 = os.path.join(p2.path, p2.library_directory, os.path.basename(p1.path))
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
+        self.assertTrue(os.path.isfile(os.path.join(dir3, p1.relocation_config)), "Project relocation file was not created.")
 
     def test_clear_library_folder(self):
         proj = Project.Project(self.dir1)
