@@ -209,6 +209,11 @@ class Test_Project(unittest.TestCase):
         self.assertEqual(p1.requirements, {})
         p1.register_project(p2)
         self.assertEqual(p1.requirements, {p2.name: p2.url})
+    
+    def test_add_root_relocation(self):
+        p1 = Project.Project(self.dir1)
+        p1.add_root_relocation()
+        self.assertTrue(os.path.isfile(os.path.join(p1.path, p1.relocation_config)), "Project relocation file was not created.")
 
 class Test_ProjectJson(unittest.TestCase):
     def __init__(self, *args, **kwargs):

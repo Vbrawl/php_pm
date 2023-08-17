@@ -37,6 +37,12 @@ class Project(ProjectJson):
         self.project_json_filename = project_json_filename
         super().__init__(os.path.join(path, project_json_filename))
     
+    def add_root_relocation(self):
+        relocation_file = os.path.join(self.path, self.relocation_config)
+        utils.generate_php_config(relocation_file, definitions = {
+            "PM_LIBRARY": self.library_directory
+        }, sdir = True)
+    
     def import_project(self, project: 'Project'):
         dest = os.path.join(self.path, self.library_directory, os.path.basename(project.path))
         utils.copy_tree(project.path, dest)
