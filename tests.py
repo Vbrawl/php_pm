@@ -221,6 +221,7 @@ class Test_Project(unittest.TestCase):
         dir3 = os.path.join(p2.path, p2.library_directory, os.path.basename(p1.path))
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
         self.assertTrue(os.path.isfile(os.path.join(dir3, p1.relocation_config)), "Project relocation file was not created.")
+        self.assertFalse(os.path.isdir(os.path.join(dir3, p1.library_directory)), "Project was relocated with it's library.")
 
         open(os.path.join(p2.path, p2.relocation_config), 'w').close()
 

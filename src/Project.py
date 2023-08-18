@@ -45,7 +45,7 @@ class Project(ProjectJson):
     
     def import_project(self, project: 'Project'):
         dest = os.path.join(self.path, self.library_directory, os.path.basename(project.path))
-        utils.copy_tree(project.path, dest)
+        utils.copy_tree(project.path, dest, exceptions=[project.library_directory, project.relocation_config])
         relocation_file = os.path.join(dest, project.relocation_config)
         main_relocation_filepath = os.path.join(self.path, self.relocation_config)
 
