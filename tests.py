@@ -374,9 +374,9 @@ class Test_Downloader(unittest.TestCase):
     def test_download_from_git(self):
         url = "https://github.com/vbrawl/php_pm.git"
         downloader = Downloader.Downloader(self.dir)
-        downloader.download_from_git(url)
+        tempdir = downloader.download_from_git(url)
 
-        self.assertTrue(os.path.isdir(os.path.join(self.dir, "php_pm")), "Project was not downloaded correctly.")
+        self.assertTrue(os.path.isdir(tempdir), "Project was not downloaded correctly.")
 
 
 
