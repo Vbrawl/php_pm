@@ -219,6 +219,12 @@ class Test_Project(unittest.TestCase):
         self.assertTrue(os.path.isdir(dir3), "Project was not imported at all")
         self.assertTrue(os.path.isfile(os.path.join(dir3, p1.relocation_config)), "Project relocation file was not created.")
 
+        open(os.path.join(p2.path, p2.relocation_config), 'w').close()
+
+        with open(os.path.join(dir3, p1.relocation_config), 'r') as f:
+            path = f.read().rstrip().split("require_once('")[-1][:-3]
+        self.assertTrue(os.path.isfile(os.path.join(dir3, path)))
+
     def test_clear_library_folder(self):
         proj = Project.Project(self.dir1)
         lib_path = os.path.join(self.dir1, proj.library_directory)
