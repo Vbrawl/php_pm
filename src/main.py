@@ -23,23 +23,76 @@ class Main():
         projRelocation = os.path.join(proj.path, proj.relocation_config)
         if not os.path.isfile(projRelocation):
             proj.add_root_relocation()
+    
+    def register_project(self):
+        proj = Project(os.getcwd())
+        if self.PROJECT_LIBRARY.get_project(proj.name):
+            raise Exception("A project with this name is already registered.")
+        else:
+            self.PROJECT_LIBRARY.add_project(proj)
+
+    def deregister_project(self, project_name:str):
+        if project_name is None:
+            raise Exception("A project name is required.")
+        # print(project_name)
+        proj = self.PROJECT_LIBRARY.get_project(project_name)
+        if proj:
+            self.PROJECT_LIBRARY.remove_project(project_name)
+        else:
+            raise Exception("No project is registered with this name.")
+    
+    def list_projects(self):
+        for project_line in map(lambda x: f'{x.name} : {x.url} : {x.version}', self.PROJECT_LIBRARY.projects):
+            print(project_line)
+    
+    def add_project(self, project_name:str):
+        root_prj = Project(os.getcwd())
+        proj = self.PROJECT_LIBRARY.get_project(project_name)
+
+        if proj:
+            root_prj.register_project(proj)
+            root_prj.save(root_prj.project_json_filename)
+        else:
+            raise Exception("No project is registered with this name.")
+    
+    def resolve_requirements(self):
+        prj = Project(os.getcwd())
+
+        prj.clear_library_folder()
+
+        for name, url in prj.requirements.items():
+            proj = self.PROJECT_LIBRARY.get_project(name)
+
+            if proj:
+                prj.import_project(proj)
+        prj.add_root_relocation()
+
 
 
 if __name__ == "__main__":
     m = Main(config)
 
     ACTIONS = {
-        "init": m.initialize_project,
+        "init": {"args": (), "func": m.initialize_project},
+        "register": {"args": (), "func": m.register_project},
+        "deregister": {"args": ("project_name",), "func": m.deregister_project},
+        "list": {"args": (), "func": m.list_projects},
+        "add": {"args": ("project_name",), "func": m.add_project},
+        "resolve": {"args": (), "func": m.resolve_requirements}
     }
 
 
     parser = argparse.ArgumentParser(app_name)
     parser.add_argument("action", action="store", help="Available Actions: " + ', '.join(ACTIONS.keys()))
-
+    parser.add_argument("-pn", "--project-name", action="store", help="The project name.", required=False)
     args = parser.parse_args()
-
 
 
     action:str = args.action
     if action in ACTIONS:
-        ACTIONS[action]()
+        action_data = ACTIONS[action]
+        arguments = []
+        for argname in action_data["args"]:
+            if argname in args.__dict__:
+                arguments.append(args.__dict__[argname])
+        action_data["func"](*arguments)
