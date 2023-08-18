@@ -20,11 +20,23 @@ def copy_file(source:str, destination:str, chunk:int = 1024*10):
             dst.write(c)
             c = src.read(chunk)
 
-def copy_tree(source:str, destination:str):
+def copy_tree(source:str, destination:str, exceptions:list[str|list[str]] = []): # type: ignore
+    exceptions:list[list[str]] = list(map(lambda x: parts_in_path(x) if isinstance(x, str) else x, exceptions))
+
     os.makedirs(destination)
     listed = os.listdir(source)
     while listed:
         item = listed.pop(0)
+        item_parts = parts_in_path(item)
+
+        is_exceptional = False
+        for exception in exceptions:
+            if item_parts[-len(exception):] == exception:
+                is_exceptional = True
+        if is_exceptional:
+            continue
+
+
         src = os.path.join(source, item)
         dst = os.path.join(destination, item)
 

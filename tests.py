@@ -48,11 +48,14 @@ class Test_Utils(unittest.TestCase):
     def test_copy_tree(self):
         directory = tempfile.mkdtemp("tree", "copy")
         open(os.path.join(directory, "testFile"), "w").close()
+        open(os.path.join(directory, ".ignoreMe"), 'w').close()
 
-        utils.copy_tree(directory, directory+"2")
+        utils.copy_tree(directory, directory+"2", [".ignoreMe"])
 
         self.assertTrue(os.path.isfile(os.path.join(directory, "testFile")), "Source directory does not exist.")
+        self.assertTrue(os.path.isfile(os.path.join(directory, ".ignoreMe")), "Source directory does not exist.")
         self.assertTrue(os.path.isfile(os.path.join(directory+"2", "testFile")), "Destination directory does not exist.")
+        self.assertFalse(os.path.isfile(os.path.join(directory+"2", ".ignoreMe")), "Destination directory contains exceptional items.")
     
 
     def test_delete_folder(self):
