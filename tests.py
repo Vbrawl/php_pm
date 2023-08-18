@@ -364,5 +364,21 @@ class Test_ProjectLibrary(unittest.TestCase):
         self.assertFalse(os.path.exists(dir), "Project folder was not deleted inside of the library")
         self.assertTrue(os.path.exists(dir2), "Project folder was deleted outside of the library")
 
+
+import Downloader
+class Test_Downloader(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        self.dir = tempfile.mkdtemp("downloader")
+        super().__init__(*args, **kwargs)
+
+    def test_download_from_git(self):
+        url = "https://github.com/vbrawl/php_pm.git"
+        downloader = Downloader.Downloader(self.dir)
+        downloader.download_from_git(url)
+
+        self.assertTrue(os.path.isdir(os.path.join(self.dir, "php_pm")), "Project was not downloaded correctly.")
+
+
+
 if __name__ == "__main__":
     unittest.main()
