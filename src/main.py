@@ -1,7 +1,9 @@
-from Project import *
-from Config import *
+from Project import ProjectLibrary, Project
+from Config import Config, app_name
+from Downloader import Downloader
 import os
 import argparse
+import utils
 
 config = Config()
 
@@ -11,6 +13,7 @@ class Main():
     def __init__(self, config):
         self.config = config
         self.PROJECT_LIBRARY = ProjectLibrary(config.library_path)
+        self.DOWNLOADER = Downloader(config.download_path)
 
     def initialize_project(self):
         proj = Project(os.getcwd())
@@ -66,6 +69,13 @@ class Main():
             if proj:
                 prj.import_project(proj)
         prj.add_root_relocation()
+    
+    def download_project(self, project_url:str):
+        tmp = self.DOWNLOADER.download_from_git(project_url)
+        if os.path.isfile(os.path.join(tmp, "project.json")):
+            proj = Project(tmp)
+            self.PROJECT_LIBRARY.add_project(proj)
+
 
 
 
@@ -78,13 +88,15 @@ if __name__ == "__main__":
         "deregister": {"args": ("project_name",), "func": m.deregister_project},
         "list": {"args": (), "func": m.list_projects},
         "add": {"args": ("project_name",), "func": m.add_project},
-        "resolve": {"args": (), "func": m.resolve_requirements}
+        "resolve": {"args": (), "func": m.resolve_requirements},
+        "download": {"args": ("project_url",), "func": m.download_project}
     }
 
 
     parser = argparse.ArgumentParser(app_name)
     parser.add_argument("action", action="store", help="Available Actions: " + ', '.join(ACTIONS.keys()))
     parser.add_argument("-pn", "--project-name", action="store", help="The project name.", required=False)
+    parser.add_argument("-pu", "--project-url", action="store", help="The project URL.")
     args = parser.parse_args()
 
 
