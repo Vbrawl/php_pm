@@ -106,11 +106,11 @@ def append_sorted(lst:list[Any], itemToAdd:Any, key = lambda x:x, ascending:Opti
                 return
     lst.append(itemToAdd)
 
-def remove_common_path(*all_paths:str|list[str]):
+def remove_common_path(*all_paths:str|list[str], join:bool = True):
     paths = []
     for path in all_paths:
         if isinstance(path, str):
-            paths.append(path.replace('\\', '/').split('/'))
+            paths.append(parts_in_path(path))
         else:
             paths.append(path)
 
@@ -126,4 +126,14 @@ def remove_common_path(*all_paths:str|list[str]):
             break
         else:
             slice_parts = i + 1
-    return tuple(map(lambda x: '/'.join(x[slice_parts:]), paths))
+    
+    if join:
+        return tuple(map(lambda x: '/'.join(x[slice_parts:]), paths))
+    else:
+        return tuple(map(lambda x: x[slice_parts:], paths))
+
+def parts_in_path(path:str):
+    res = path.replace('\\', '/').split('/')
+    for i in range(res.count("")):
+        res.remove("")
+    return res

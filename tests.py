@@ -160,9 +160,22 @@ define('test2', 'hi2');
         subp = "/a/b/c/d/e/awd/awpdok"
 
         res = utils.remove_common_path(a, subp)
-        expected_res = ("f/g", "awd/awpdok")
+        res2 = utils.remove_common_path(a, subp, join=False)
+        expected_res = (["f", "g"], ["awd", "awpdok"])
 
-        self.assertEqual(res, expected_res)
+        self.assertEqual(res, tuple(map(lambda x: '/'.join(x), expected_res)))
+        self.assertEqual(res2, expected_res)
+    
+    def test_parts_in_path(self):
+        a = '/a/b/c/d/e/f/g'
+        EAres = ["a", "b", "c", "d", "e", "f", "g"]
+        Ares = utils.parts_in_path(a)
+        self.assertEqual(Ares, EAres)
+
+        b = "/a/b/c/d/e/f/g//"
+        EBres = ["a", "b", "c", "d", "e", "f", "g"]
+        Bres = utils.parts_in_path(b)
+        self.assertEqual(Bres, EBres)
 
 
 
