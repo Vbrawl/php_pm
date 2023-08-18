@@ -14,12 +14,12 @@ class ProjectJson:
 
         get_value = lambda key, default_ = "": project_json[key] if key in project_json.keys() else default_
 
-        self.name = get_value("project_name", os.path.basename(os.path.dirname(project_json_path)) if project_json_path is not None else "Project")
-        self.version = get_value("project_version", "1.0.0")
-        self.url = get_value("project_url", "")
-        self.requirements = get_value("project_requirements", {})
-        self.library_directory = get_value("project_library_directory", "pm_library")
-        self.relocation_config = get_value("project_relocation_config", "relocation.php")
+        self.name:str = get_value("project_name", os.path.basename(os.path.dirname(project_json_path)) if project_json_path is not None else "Project")
+        self.version:str = get_value("project_version", "1.0.0")
+        self.url:str = get_value("project_url", "")
+        self.requirements:dict[str, str] = get_value("project_requirements", {})
+        self.library_directory:str = get_value("project_library_directory", "pm_library")
+        self.relocation_config:str = get_value("project_relocation_config", "relocation.php")
     
     def save(self, filepath):
         utils.write_json(filepath, {
