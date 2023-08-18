@@ -83,7 +83,7 @@ class ProjectLibrary:
     def add_project(self, project:Project):
         if self.path is not None:
             dest = os.path.join(self.path, os.path.basename(project.path))
-            utils.copy_tree(project.path, dest)
+            utils.copy_tree(project.path, dest, exceptions=[project.library_directory, project.relocation_config])
             project = Project(dest)
         utils.append_sorted(self.projects, project, key = lambda x: x.name)
     
