@@ -83,7 +83,7 @@ class Test_Utils(unittest.TestCase):
 
         output = """<?php
 require_once('test_file.php');
-$sdir = str_replace('\\\\', '/', __DIR__);
+$sdir = str_replace('\\\\', '/', __DIR__).'/';
 define('test1', $sdir.'hi');
 define('test2', $sdir.'hi2');
 unset($sdir);

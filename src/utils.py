@@ -69,7 +69,7 @@ def generate_php_config(filename:str, definitions:dict[str, str] = {}, sdir:bool
             php.write(f"require_once('{fname}');\n")
 
         if sdir:
-            php.write("$sdir = str_replace('\\\\', '/', __DIR__);\n")
+            php.write("$sdir = str_replace('\\\\', '/', __DIR__).'/';\n")
 
         for key, value in definitions.items():
             php.write(f"define('{key}', {'$sdir.' if sdir else ''}'{value}');\n")
