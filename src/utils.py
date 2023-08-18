@@ -106,12 +106,24 @@ def append_sorted(lst:list[Any], itemToAdd:Any, key = lambda x:x, ascending:Opti
                 return
     lst.append(itemToAdd)
 
-def remove_subpath(path_:str, subp:str):
-    pathl = path_.replace("\\", "/").split('/')
-    subpl = subp.replace("\\", "/").split('/')
+def remove_common_path(*all_paths:str|list[str]):
+    paths = []
+    for path in all_paths:
+        if isinstance(path, str):
+            paths.append(path.replace('\\', '/').split('/'))
+        else:
+            paths.append(path)
 
-    while subpl != [] and pathl != [] and subpl[0] == pathl[0]:
-        subpl.pop(0)
-        pathl.pop(0)
-    
-    return '/'.join(pathl)
+    slice_parts = 0
+    for i in range(len(paths[0])):
+        part = paths[0][i]
+        failure = False
+        for path in paths:
+            if path[i] != part:
+                failure = True
+                break
+        if failure:
+            break
+        else:
+            slice_parts = i + 1
+    return tuple(map(lambda x: '/'.join(x[slice_parts:]), paths))

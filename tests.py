@@ -155,12 +155,12 @@ define('test2', 'hi2');
         utils.append_sorted(lst, 11)
         self.assertEqual(lst, [11, 11, 10, 5, 3, 2, 2, 1, 0])
     
-    def test_remove_subpath(self):
+    def test_remove_common_path(self):
         a = "/a/b/c/d/e/f/g"
         subp = "/a/b/c/d/e/awd/awpdok"
 
-        res = utils.remove_subpath(a, subp)
-        expected_res = "f/g"
+        res = utils.remove_common_path(a, subp)
+        expected_res = ("f/g", "awd/awpdok")
 
         self.assertEqual(res, expected_res)
 
