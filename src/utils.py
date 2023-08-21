@@ -140,9 +140,9 @@ def remove_common_path(*all_paths:str|list[str], join:bool = True):
             slice_parts = i + 1
     
     if join:
-        return tuple(map(lambda x: '/'.join(x[slice_parts:]), paths))
+        return tuple(map(lambda x: '/'.join(x[slice_parts:]), paths)) # type: ignore
     else:
-        return tuple(map(lambda x: x[slice_parts:], paths))
+        return tuple(map(lambda x: x[slice_parts:], paths)) # type: ignore
 
 def parts_in_path(path:str):
     res = path.replace('\\', '/').split('/')
