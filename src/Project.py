@@ -62,6 +62,10 @@ class Project(ProjectJson):
 
     def register_project(self, project: 'Project'):
         self.requirements[project.name] = project.url
+    
+    def deregister_project(self, project_name: str):
+        if project_name in self.requirements:
+            del self.requirements[project_name]
 
 
 class ProjectLibrary:

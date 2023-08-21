@@ -56,6 +56,11 @@ class Main():
         else:
             raise Exception("No project is registered with this name.")
     
+    def remove_project(self, project_name:str):
+        root_prj = Project(os.getcwd())
+        root_prj.deregister_project(project_name)
+        root_prj.save(root_prj.project_json_filename)
+    
     def resolve_requirements(self):
         prj = Project(os.getcwd())
 
@@ -86,6 +91,7 @@ if __name__ == "__main__":
         "deregister": {"args": ("project_name",), "func": m.deregister_project},
         "list": {"args": (), "func": m.list_projects},
         "add": {"args": ("project_name",), "func": m.add_project},
+        "remove": {"args": ("project_name",), "func": m.remove_project},
         "resolve": {"args": (), "func": m.resolve_requirements},
         "download": {"args": ("project_url",), "func": m.download_project}
     }
