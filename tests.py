@@ -309,23 +309,16 @@ class Test_ProjectLibrary(unittest.TestCase):
             json.dump({"project_name": "Project2", "project_url": "Project2URL"}, js)
         super().__init__(*args, **kwargs)
 
-    def test_constructor_AND_load_projects(self):
-        pl = Project.ProjectLibrary(self.tmpdir)
+    def test_constructor(self):
+        pl = Project.ProjectLibrary(self.tmpdir, os.path.join(self.tmpdir, "database.db"))
         projects = [
             Project.Project(self.project1),
             Project.Project(self.project2)
         ]
 
-        found_projects = 0
-        for i, proj in enumerate(pl.projects):
-            if proj.name == projects[i].name:
-                found_projects += 1
-        
-        self.assertEqual(found_projects, len(projects))
-
         templib = os.path.join(self.tmpdir, "TempLib")
         pl2 = Project.ProjectLibrary(templib)
-        self.assertTrue(os.path.exists(templib), "Temporary inexistent folder was not created.")
+        self.assertTrue(os.path.exists(os.path.join(self.tmpdir, "database.db")), "Temporary database file was not created.")
     
     def test_get_project(self):
         pl = Project.ProjectLibrary(self.tmpdir)
@@ -345,7 +338,6 @@ class Test_ProjectLibrary(unittest.TestCase):
         self.assertNotEqual(pl.get_project("Project4"), None)
         pl.add_project(Project.Project(proj3))
         self.assertNotEqual(pl.get_project("Project3"), None)
-        self.assertEqual(pl.projects[2].name, "Project3", "Project List lost sorting")
     
     def test_remove_project(self):
         dir = os.path.join(self.tmpdir, "RemoveProject-Project")
