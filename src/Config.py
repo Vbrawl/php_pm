@@ -19,6 +19,7 @@ if not os.path.exists(app_directory):
 
 class Config:
     library_path = os.path.join(app_directory, "pm_library")
+    database_path = os.path.join(app_directory, "pm_library.db")
     download_path = os.path.join(app_directory, "pm_downloads")
 
     def __init__(self, **kwargs):

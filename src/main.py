@@ -3,7 +3,6 @@ from Config import Config, app_name
 from Downloader import Downloader
 import os
 import argparse
-import utils
 
 config = Config()
 
@@ -12,7 +11,7 @@ config = Config()
 class Main():
     def __init__(self, config):
         self.config = config
-        self.PROJECT_LIBRARY = ProjectLibrary(config.library_path)
+        self.PROJECT_LIBRARY = ProjectLibrary(config.library_path, config.database_path)
         self.DOWNLOADER = Downloader(config.download_path)
 
     def initialize_project(self):
@@ -32,12 +31,11 @@ class Main():
         if self.PROJECT_LIBRARY.get_project(proj.name):
             raise Exception("A project with this name is already registered.")
         else:
-            self.PROJECT_LIBRARY.add_project(proj)
+            self.PROJECT_LIBRARY.add_project_link(proj)
 
     def deregister_project(self, project_name:str):
         if project_name is None:
             raise Exception("A project name is required.")
-        # print(project_name)
         proj = self.PROJECT_LIBRARY.get_project(project_name)
         if proj:
             self.PROJECT_LIBRARY.remove_project(project_name)
@@ -45,7 +43,7 @@ class Main():
             raise Exception("No project is registered with this name.")
     
     def list_projects(self):
-        for project_line in map(lambda x: f'{x.name} : {x.url} : {x.version}', self.PROJECT_LIBRARY.projects):
+        for project_line in map(lambda x: f'{x.name} : {x.url} : {x.version} : {x.path}', self.PROJECT_LIBRARY.list_projects()):
             print(project_line)
     
     def add_project(self, project_name:str):
