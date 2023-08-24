@@ -19,12 +19,12 @@ class Main():
         projJs = os.path.join(proj.path, proj.project_json_filename)
         if not os.path.isfile(projJs):
             proj.save(projJs)
-        projLibrary = os.path.join(proj.path, proj.library_directory)
-        if not os.path.isdir(projLibrary):
-            proj.clear_library_folder()
-        projRelocation = os.path.join(proj.path, proj.relocation_config)
-        if not os.path.isfile(projRelocation):
-            proj.add_root_relocation()
+        #projLibrary = os.path.join(proj.path, proj.library_directory)
+        #if not os.path.isdir(projLibrary):
+        #    proj.clear_library_folder()
+        #projRelocation = os.path.join(proj.path, proj.relocation_config)
+        #if not os.path.isfile(projRelocation):
+        #    proj.add_root_relocation()
     
     def register_project(self):
         proj = Project(os.getcwd())
