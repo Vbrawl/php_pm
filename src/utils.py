@@ -36,15 +36,14 @@ def copy_tree(source:str, destination:str, exceptions:list[str|list[str]] = []):
         if is_exceptional:
             continue
 
-
         src = os.path.join(source, item)
         dst = os.path.join(destination, item)
 
         if os.path.isfile(src):
             copy_file(src, dst)
         elif os.path.isdir(src):
-            os.makedirs(dst)
-            listed.extend(os.listdir(src))
+            os.mkdir(dst)
+            listed.extend(map(lambda x: os.path.join(item, x), os.listdir(src)))
 
 
 def delete_folder(folder_path:str):
