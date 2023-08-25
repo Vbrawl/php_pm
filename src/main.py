@@ -3,6 +3,7 @@ from Config import Config, app_name
 from Downloader import Downloader
 import os
 import argparse
+import utils
 
 config = Config()
 
@@ -79,6 +80,16 @@ class Main():
             proj = Project(tmp)
             self.PROJECT_LIBRARY.add_project(proj)
 
+    def clear_project(self):
+        prj = Project(os.getcwd())
+
+        library_path = os.path.join(prj.path, prj.library_directory)
+        if os.path.isdir(library_path):
+            utils.delete_folder(library_path)
+        reloc_path = os.path.join(prj.path, prj.relocation_config)
+        if os.path.isfile(reloc_path):
+            os.unlink(reloc_path)
+
 
 
 
@@ -93,7 +104,8 @@ if __name__ == "__main__":
         "add": {"args": ("project_name",), "func": m.add_project},
         "remove": {"args": ("project_name",), "func": m.remove_project},
         "resolve": {"args": (), "func": m.resolve_requirements},
-        "download": {"args": ("project_url",), "func": m.download_project}
+        "download": {"args": ("project_url",), "func": m.download_project},
+        "clear": {"args": (), "func": m.clear_project}
     }
 
 
