@@ -70,6 +70,10 @@ class Main():
         for name, url in prj.requirements.items():
             proj = self.PROJECT_LIBRARY.get_project(name)
 
+            if not proj and url != '':
+                self.download_project(url)
+                proj = self.PROJECT_LIBRARY.get_project(name)
+
             if proj:
                 prj.import_project(proj)
         prj.add_root_relocation()
