@@ -53,7 +53,12 @@ class Project(ProjectJson):
             projName = proj.name.upper()
             definitions[projName+"_PATH"] = projPath
 
-        utils.generate_php_config(relocation_file, definitions = definitions, sdir = True)
+        utils.generate_php_config(
+            relocation_file,
+            definitions = definitions,
+            sdir = True,
+            functions = ['load_file']
+        )
 
     def import_project(self, project: 'Project'):
         dest = os.path.join(self.path, self.library_directory, os.path.basename(project.path))
