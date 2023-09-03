@@ -1,7 +1,7 @@
 from Config import app_name
 
 load_file = """
-function load_file(string $path) {
+function load_file(string $path, string $file_options = '', string $content_options = '') {
     $path = str_replace('\\\\', '/', $path);
     $in_server = false;
     $rootdir = str_replace('\\\\', '/', $_SERVER['DOCUMENT_ROOT']);
@@ -14,35 +14,37 @@ function load_file(string $path) {
 
     $extension = explode('.', basename($path));
     $extlast = array_key_last($extension);
-    switch ($path) {
-    case 'css':
-        load_stylesheet($path, $in_server);
-        break;
+    if($extlast !== null) {
+        switch ($extension[$extlast]) {
+        case 'css':
+            load_stylesheet($path, $in_server, $file_options, $content_options);
+            break;
     
-    case 'js':
-        load_script($path, $in_server);
-        break;
+        case 'js':
+            load_script($path, $in_server, $file_options, $content_options);
+            break;
+        }
     }
 
 }
 
-function load_stylesheet(string $path, bool $in_server) {
+function load_stylesheet(string $path, bool $in_server, string $file_options, string $content_options) {
     if($in_server) {
-        echo '<link rel=\"stylesheet\" href=\"'.$path.'\">';
+        echo '<link rel=\"stylesheet\" href=\"'.$path.'\" '.$file_options.'>';
     }
     else {
-        echo '<style>';
+        echo '<style '.$content_options.'>';
         readfile($path);
         echo '</style>';
     }
 }
 
-function load_script(string $path, bool $in_server) {
+function load_script(string $path, bool $in_server, string $file_options, string $content_options) {
     if($in_server) {
-        echo '<script src=\"'.$path.'\">';
+        echo '<script src=\"'.$path.'\" '.$file_options.'></script>';
     }
     else {
-        echo '<script>';
+        echo '<script '.$content_options.'>';
         readfile($path);
         echo '</script>';
     }
