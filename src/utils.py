@@ -1,5 +1,6 @@
 import json
 import os
+import PHPFunctions
 from typing import Any, Optional
 
 def read_json(filepath:str) -> list | dict:
@@ -61,7 +62,7 @@ def delete_folder(folder_path:str):
         os.rmdir(dir)
     os.rmdir(folder_path)
 
-def generate_php_config(filename:str, definitions:dict[str, str] = {}, sdir:bool = False, requirement_files:list[str] = []):
+def generate_php_config(filename:str, definitions:dict[str, str] = {}, sdir:bool = False, requirement_files:list[str] = [], functions:list[str] = []):
     with open(filename, 'w') as php:
         php.write("<?php\n")
         for fname in requirement_files:
@@ -75,6 +76,9 @@ def generate_php_config(filename:str, definitions:dict[str, str] = {}, sdir:bool
 
         if sdir:
             php.write("unset($sdir);\n")
+        
+        for func in functions:
+            php.write(getattr(PHPFunctions, func) + '\n')
 
 def binary_search(lst:list[Any], searchFor:Any, key = lambda x:x):
     llst = len(lst)
