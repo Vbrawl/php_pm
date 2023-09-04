@@ -90,12 +90,22 @@ class Main():
     def clear_project(self):
         prj = Project(os.getcwd())
 
-        library_path = os.path.join(prj.path, prj.library_directory)
-        if os.path.isdir(library_path):
-            utils.delete_folder(library_path)
-        reloc_path = os.path.join(prj.path, prj.relocation_config)
-        if os.path.isfile(reloc_path):
-            os.unlink(reloc_path)
+        if os.path.exists(os.path.join(prj.path, prj.project_json_filename)):
+
+            library_path = os.path.join(prj.path, prj.library_directory)
+            libexists = os.path.isdir(library_path)
+            reloc_path = os.path.join(prj.path, prj.relocation_config)
+            relocexists = os.path.isfile(reloc_path)
+
+            if not libexists and not relocexists:
+                raise Exception("Project directory is already clean.")
+            else:
+                if libexists:
+                    utils.delete_folder(library_path)
+                if relocexists:
+                    os.unlink(reloc_path)
+        else:
+            raise Exception("This is not a project directory. Run the 'init' command.")
 
 
 
