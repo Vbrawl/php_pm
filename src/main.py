@@ -65,18 +65,21 @@ class Main():
     def resolve_requirements(self):
         prj = Project(os.getcwd())
 
-        prj.clear_library_folder()
+        if os.path.exists(os.path.join(prj.path, prj.project_json_filename)):
+            prj.clear_library_folder()
 
-        for name, url in prj.requirements.items():
-            proj = self.PROJECT_LIBRARY.get_project(name)
-
-            if not proj and url != '':
-                self.download_project(url)
+            for name, url in prj.requirements.items():
                 proj = self.PROJECT_LIBRARY.get_project(name)
 
-            if proj:
-                prj.import_project(proj)
-        prj.add_root_relocation()
+                if not proj and url != '':
+                    self.download_project(url)
+                    proj = self.PROJECT_LIBRARY.get_project(name)
+
+                if proj:
+                    prj.import_project(proj)
+            prj.add_root_relocation()
+        else:
+            raise Exception("This is not a project directory. Run the 'init' command.")
     
     def download_project(self, project_url:str):
         tmp = self.DOWNLOADER.download_from_git(project_url)
