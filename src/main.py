@@ -63,21 +63,26 @@ class Main():
         root_prj.save(root_prj.project_json_filename)
     
     def resolve_requirements(self):
-        prj = Project(os.getcwd())
+        root_project = Project(os.getcwd())
 
-        if os.path.exists(os.path.join(prj.path, prj.project_json_filename)):
-            prj.clear_library_folder()
+        if os.path.exists(os.path.join(root_project.path, root_project.project_json_filename)):
+            root_project.clear_library_folder()
 
-            for name, url in prj.requirements.items():
-                proj = self.PROJECT_LIBRARY.get_project(name)
+            all_projects = [root_project]
 
-                if not proj and url != '':
-                    self.download_project(url)
+            while all_projects != []:
+                requirement_project = all_projects.pop()
+                for name, url in requirement_project.requirements.items():
                     proj = self.PROJECT_LIBRARY.get_project(name)
 
-                if proj:
-                    prj.import_project(proj)
-            prj.add_root_relocation()
+                    if not proj and url != '':
+                        self.download_project(url)
+                        proj = self.PROJECT_LIBRARY.get_project(name)
+
+                    if proj:
+                        root_project.import_project(proj)
+                        all_projects.append(proj)
+            root_project.add_root_relocation()
         else:
             raise Exception("This is not a project directory. Run the 'init' command.")
     
