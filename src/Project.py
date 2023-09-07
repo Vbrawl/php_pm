@@ -20,7 +20,10 @@ class ProjectJson:
         self.url:str = get_value("project_url", "")
         self.requirements:dict[str, str] = get_value("project_requirements", {})
         self.library_directory:str = get_value("project_library_directory", "pm_library")
+        self.input_resource_directory:str = get_value("project_input_resource_directory", "resources")
+        self.output_resource_directory:str = get_value("project_output_resource_directory", "pm_resources")
         self.relocation_config:str = get_value("project_relocation_config", "relocation.php")
+        self.javascript_relocation_config = get_value("project_javascript_relocation_config", "relocation.js")
 
     def save(self, filepath):
         utils.write_json(filepath, {
@@ -29,6 +32,8 @@ class ProjectJson:
             "project_url": self.url,
             "project_requirements": self.requirements,
             "project_library_directory": self.library_directory,
+            "project_input_resource_directory": self.input_resource_directory,
+            "project_output_resource_directory": self.output_resource_directory,
             "project_relocation_config": self.relocation_config
         })
 
@@ -40,18 +45,29 @@ class Project(ProjectJson):
 
     def add_root_relocation(self):
         relocation_file = os.path.join(self.path, self.relocation_config)
+        jsrelocation_file = os.path.join(self.path, self.javascript_relocation_config)
 
         definitions = {
-            "PM_LIBRARY": self.library_directory
+            "PM_LIBRARY": self.library_directory,
+            "PM_RESOURCES": self.output_resource_directory
+        }
+
+        jsdefinitions = {
+            "PM_RESOURCES": utils.rooterize_path(self.output_resource_directory)
         }
 
         definitions[self.name.upper()+"_PATH"] = "."
+        definitions[self.name.upper()+"_RESOURCES_PATH"] = self.input_resource_directory
+        jsdefinitions[self.name.upper()+"_RESOURCES_PATH"] = utils.rooterize_path(self.input_resource_directory)
 
         for rname in os.listdir(self.library_directory):
-            projPath = os.path.join(self.library_directory, rname)
+            projPath = os.path.join(self.library_directory, rname).replace('\\', '/')
             proj = Project(projPath)
+            projResPath = os.path.join(self.output_resource_directory, os.path.basename(proj.path)).replace('\\', '/')
             projName = proj.name.upper()
             definitions[projName+"_PATH"] = projPath
+            definitions[projName+"_RESOURCES_PATH"] = projResPath
+            jsdefinitions[projName+"_RESOURCES_PATH"] = utils.rooterize_path(projResPath)
 
         utils.generate_php_config(
             relocation_file,
@@ -59,13 +75,20 @@ class Project(ProjectJson):
             sdir = True,
             functions = ['load_file']
         )
+        utils.generate_js_config(
+            jsrelocation_file,
+            definitions=jsdefinitions
+        )
 
     def import_project(self, project: 'Project'):
         dest = os.path.join(self.path, self.library_directory, os.path.basename(project.path))
         if not os.path.exists(dest):
-            utils.copy_tree(project.path, dest, exceptions=[project.library_directory, project.relocation_config])
+            utils.copy_tree(project.path, dest, exceptions=[project.library_directory, project.relocation_config, project.input_resource_directory])
             relocation_file = os.path.join(dest, project.relocation_config)
             main_relocation_filepath = os.path.join(self.path, self.relocation_config)
+
+            resourcesDestination = os.path.join(self.path, self.output_resource_directory, os.path.basename(project.path))
+            utils.copy_tree(project.input_resource_directory, resourcesDestination)
 
             paths = utils.remove_common_path(relocation_file, main_relocation_filepath, join = False)
             point_to_path = os.path.join('../' * len(paths[0][:-1]), *paths[1][:-1], self.relocation_config)
@@ -76,6 +99,11 @@ class Project(ProjectJson):
         lib_folder = os.path.join(self.path, self.library_directory)
         if os.path.isdir(lib_folder): utils.delete_folder(lib_folder)
         os.mkdir(lib_folder)
+    
+    def clear_resource_folder(self):
+        res_folder = os.path.join(self.path, self.output_resource_directory)
+        if os.path.isdir(res_folder): utils.delete_folder(res_folder)
+        os.mkdir(res_folder)
 
     def register_project(self, project: 'Project'):
         self.requirements[project.name] = project.url

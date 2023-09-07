@@ -20,12 +20,10 @@ class Main():
         projJs = os.path.join(proj.path, proj.project_json_filename)
         if not os.path.isfile(projJs):
             proj.save(projJs)
-        #projLibrary = os.path.join(proj.path, proj.library_directory)
-        #if not os.path.isdir(projLibrary):
-        #    proj.clear_library_folder()
-        #projRelocation = os.path.join(proj.path, proj.relocation_config)
-        #if not os.path.isfile(projRelocation):
-        #    proj.add_root_relocation()
+        
+        resource_folder = os.path.join(proj.path, proj.input_resource_directory)
+        if not os.path.isdir(resource_folder):
+            os.makedirs(resource_folder)
     
     def register_project(self):
         proj = Project(os.getcwd())
@@ -67,6 +65,7 @@ class Main():
 
         if os.path.exists(os.path.join(root_project.path, root_project.project_json_filename)):
             root_project.clear_library_folder()
+            root_project.clear_resource_folder()
 
             all_projects = [root_project]
 
@@ -101,12 +100,16 @@ class Main():
             libexists = os.path.isdir(library_path)
             reloc_path = os.path.join(prj.path, prj.relocation_config)
             relocexists = os.path.isfile(reloc_path)
+            res_path = os.path.join(prj.path, prj.output_resource_directory)
+            resexists = os.path.isdir(res_path)
 
-            if not libexists and not relocexists:
+            if not libexists and not relocexists and not resexists:
                 raise Exception("Project directory is already clean.")
             else:
                 if libexists:
                     utils.delete_folder(library_path)
+                if res_path:
+                    utils.delete_folder(res_path)
                 if relocexists:
                     os.unlink(reloc_path)
         else:
