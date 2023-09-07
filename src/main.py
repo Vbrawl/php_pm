@@ -100,10 +100,12 @@ class Main():
             libexists = os.path.isdir(library_path)
             reloc_path = os.path.join(prj.path, prj.relocation_config)
             relocexists = os.path.isfile(reloc_path)
+            jsreloc_path = os.path.join(prj.path, prj.javascript_relocation_config)
+            jsrelocexists = os.path.isfile(jsreloc_path)
             res_path = os.path.join(prj.path, prj.output_resource_directory)
             resexists = os.path.isdir(res_path)
 
-            if not libexists and not relocexists and not resexists:
+            if not libexists and not relocexists and not resexists and not jsrelocexists:
                 raise Exception("Project directory is already clean.")
             else:
                 if libexists:
@@ -112,6 +114,8 @@ class Main():
                     utils.delete_folder(res_path)
                 if relocexists:
                     os.unlink(reloc_path)
+                if jsrelocexists:
+                    os.unlink(jsreloc_path)
         else:
             raise Exception("This is not a project directory. Run the 'init' command.")
 
