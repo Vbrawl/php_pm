@@ -34,7 +34,8 @@ class ProjectJson:
             "project_library_directory": self.library_directory,
             "project_input_resource_directory": self.input_resource_directory,
             "project_output_resource_directory": self.output_resource_directory,
-            "project_relocation_config": self.relocation_config
+            "project_relocation_config": self.relocation_config,
+            "project_javascript_relocation_config": self.javascript_relocation_config
         })
 
 class Project(ProjectJson):
