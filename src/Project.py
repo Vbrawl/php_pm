@@ -61,14 +61,15 @@ class Project(ProjectJson):
         definitions[self.name.upper()+"_RESOURCES_PATH"] = self.input_resource_directory
         jsdefinitions[self.name.upper()+"_RESOURCES_PATH"] = utils.rooterize_path(self.input_resource_directory)
 
-        for rname in os.listdir(self.library_directory):
-            projPath = os.path.join(self.library_directory, rname).replace('\\', '/')
-            proj = Project(projPath)
-            projResPath = os.path.join(self.output_resource_directory, os.path.basename(proj.path)).replace('\\', '/')
-            projName = proj.name.upper()
-            definitions[projName+"_PATH"] = projPath
-            definitions[projName+"_RESOURCES_PATH"] = projResPath
-            jsdefinitions[projName+"_RESOURCES_PATH"] = utils.rooterize_path(projResPath)
+        if os.path.exists(self.library_directory):
+            for rname in os.listdir(self.library_directory):
+                projPath = os.path.join(self.library_directory, rname).replace('\\', '/')
+                proj = Project(projPath)
+                projResPath = os.path.join(self.output_resource_directory, os.path.basename(proj.path)).replace('\\', '/')
+                projName = proj.name.upper()
+                definitions[projName+"_PATH"] = projPath
+                definitions[projName+"_RESOURCES_PATH"] = projResPath
+                jsdefinitions[projName+"_RESOURCES_PATH"] = utils.rooterize_path(projResPath)
 
         utils.generate_php_config(
             relocation_file,
