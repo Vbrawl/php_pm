@@ -89,8 +89,9 @@ class Project(ProjectJson):
             relocation_file = os.path.join(dest, project.relocation_config)
             main_relocation_filepath = os.path.join(self.path, self.relocation_config)
 
+            resourcesSource = os.path.join(project.path, project.input_resource_directory)
             resourcesDestination = os.path.join(self.path, self.output_resource_directory, os.path.basename(project.path))
-            utils.copy_tree(project.input_resource_directory, resourcesDestination)
+            utils.copy_tree(resourcesSource, resourcesDestination)
 
             paths = utils.remove_common_path(relocation_file, main_relocation_filepath, join = False)
             point_to_path = os.path.join('../' * len(paths[0][:-1]), *paths[1][:-1], self.relocation_config)
