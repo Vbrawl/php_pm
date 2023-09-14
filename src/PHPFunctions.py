@@ -1,8 +1,8 @@
 from Config import app_name
 
 load_file = """
-function load_file(string $path, string $file_options = '', string $content_options = '') {
-    $path = str_replace('\\\\', '/', $path);
+function load_file(string $initial_path, string $file_options = '', string $content_options = '') {
+    $path = str_replace('\\\\', '/', $initial_path);
     $in_server = false;
     $rootdir = str_replace('\\\\', '/', $_SERVER['DOCUMENT_ROOT']);
     $rootdirlen = strlen($rootdir);
@@ -22,6 +22,10 @@ function load_file(string $path, string $file_options = '', string $content_opti
     
         case 'js':
             load_script($path, $in_server, $file_options, $content_options);
+            break;
+        
+        case 'svg':
+            load_svg($initial_path);
             break;
         }
     }
@@ -48,5 +52,9 @@ function load_script(string $path, bool $in_server, string $file_options, string
         readfile($path);
         echo '</script>';
     }
+}
+
+function load_svg(string $path) {
+    readfile($path);
 }
 """
